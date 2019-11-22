@@ -5,7 +5,8 @@ export default {
 	input: 'src/main.js',
 	output: {
 		file: 'index.js',
-		format: 'cjs'
+		format: 'umd',
+		name: 'Morecharts'
 	},
 	plugins: [
 		resolve(),

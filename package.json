@@ -1,26 +1,22 @@
 {
   "name": "morecharts",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "提供丰富的echarts图库，write once run manytimes",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c ./build/rollup.config.js"
   },
-  "author": "",
+  "author": "J.S.Patrick",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.7.0",
     "@babel/core": "^7.7.2",
     "@babel/plugin-proposal-optional-chaining": "^7.6.0",
+    "@babel/plugin-transform-modules-umd": "^7.7.0",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.7.1",
-    "babel-plugin-external-helpers": "^6.22.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-node-resolve": "^5.2.0"
-  },
-  "dependencies": {
-    "@babel/polyfill": "^7.7.0",
-    "core-js": "^2.6.10"
   }
 }

@@ -3,7 +3,7 @@
 * 提供丰富的echarts图库，write once run manytimes
 */
 import tool from './utils'
-class Morechart {
+class Morecharts {
 	constructor(){
 		this.verson = '0.0.1';
 		this.token = null;
@@ -130,23 +130,5 @@ function triggerPie(option) {
 	}
 }
 
-(function(factory) {
-	if (typeof module === 'object' && typeof module.exports === 'object') {
-		// commonjs模块规范，nodejs环境
-		module.exports = factory();
-	} else if (typeof define === 'function' && define.amd) {
-		// AMD模块规范，如require.js
-		define(factory)
-	} else if (typeof define === 'function' && define.cmd) {
-		// CMD模块规范，如sea.js
-		define(function(require, exports, module) {
-			module.exports = factory()
-		})
-	} else {
-		// 没有模块环境，直接挂载在全局对象上
-		window.Morechart = factory();
-	}
-}(function() {
-	return (new Morechart())
-}));
+export default new Morecharts()
 
