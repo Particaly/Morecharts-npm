@@ -31,71 +31,74 @@
     <script src="https://cdn.bootcss.com/echarts/4.4.0-rc.1/echarts.js"></script>
     <script src="../index.js"></script>
     <script>
-        echarts = Morechart.init(echarts);
-        chart1 = echarts.init('#chart1');
-        chart2 = echarts.init('#chart2');
-        chart3 = echarts.init('#chart3');
-        chart4 = echarts.init('#chart4');
-        let option = {
-	        legend: {
-		        x: 'center',
-		        y: 'bottom',
-		        data: ['rose1', 'rose2', 'rose3']
-	        },
-	        // calculable : true,
-	        series: [{
-		        name: 'morecharts',
-		        type: 'pie',
-		        radius: ['50%', '60%'],
-		        data: [50,50,50,50,50],
-		        interval: 'auto',
-		        label: {
-			        show: true,
-			        color: 'rgba(255,255,255,0.7)',
-			        fontSize: 20,
-			        formatter: function(params) {
-				        return [
-					        `{a|${params.name}}`,
-					        `{b|${params.percent}%}`
-				        ].join('\n')
-			        },
-			        rich: {
-				        a: {
-					        fontSize: 24,
-					        fontWeight: '400',
-					        fontFamily: 'Microsoft YaHei',
-					        color: 'rgba(255,255,255,.5)',
-					        lineHeight: 31
+        window.onload = function(){
+        	console.log(Morechart);
+	        echarts = Morechart.init(echarts);
+	        chart1 = echarts.init('#chart1');
+	        chart2 = echarts.init('#chart2');
+	        chart3 = echarts.init('#chart3');
+	        chart4 = echarts.init('#chart4');
+	        let option = {
+		        legend: {
+			        x: 'center',
+			        y: 'bottom',
+			        data: ['rose1', 'rose2', 'rose3']
+		        },
+		        // calculable : true,
+		        series: [{
+			        name: 'morecharts',
+			        type: 'pie',
+			        radius: ['50%', '60%'],
+			        data: [50,50,50,50,50],
+			        interval: 'auto',
+			        label: {
+				        show: true,
+				        color: 'rgba(255,255,255,0.7)',
+				        fontSize: 20,
+				        formatter: function(params) {
+					        return [
+						        `{a|${params.name}}`,
+						        `{b|${params.percent}%}`
+					        ].join('\n')
 				        },
-				        b: {
-					        fontSize: 24,
-					        fontWeight: '800',
-					        fontFamily: 'FuturaStd-Heavy',
-					        color: 'rgba(255,255,255,1)',
-					        lineHeight: 31
+				        rich: {
+					        a: {
+						        fontSize: 24,
+						        fontWeight: '400',
+						        fontFamily: 'Microsoft YaHei',
+						        color: 'rgba(255,255,255,.5)',
+						        lineHeight: 31
+					        },
+					        b: {
+						        fontSize: 24,
+						        fontWeight: '800',
+						        fontFamily: 'FuturaStd-Heavy',
+						        color: 'rgba(255,255,255,1)',
+						        lineHeight: 31
+					        }
 				        }
-			        }
-		        },
-		        labelLine:{
-			        show:false
-		        },
-		        itemStyle: {
-			        color: function(params){
-				        let color = [
-					        'rgba(47, 168, 252, 1)',
-					        'rgba(47, 211, 252, 1)',
-				        ]
-				        let index = params.dataIndex%2;
-				        return color[index]
 			        },
-			        borderColor: 'rgba(47, 235, 252, 1)'
-		        }
-	        }]
+			        labelLine:{
+				        show:false
+			        },
+			        itemStyle: {
+				        color: function(params){
+					        let color = [
+						        'rgba(47, 168, 252, 1)',
+						        'rgba(47, 211, 252, 1)',
+					        ]
+					        let index = params.dataIndex%2;
+					        return color[index]
+				        },
+				        borderColor: 'rgba(47, 235, 252, 1)'
+			        }
+		        }]
+	        };
+	        chart1.setOption(option);
+	        chart2.setOption(option);
+	        chart3.setOption(option);
+	        chart4.setOption(option);
         };
-        chart1.setOption(option)
-        // chart2.setOption(option)
-        // chart3.setOption(option)
-        // chart4.setOption(option)
     </script>
 </body>
 </html>
