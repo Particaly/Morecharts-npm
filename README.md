@@ -7,7 +7,7 @@
 npm install morecharts --save
 ```
 ##### 处理 echarts
-```
+```javascript
 // main.js
 import Morecharts from 'morecharts'
 Morecharts.init(echarts)
