@@ -70,13 +70,144 @@
     }
   };
 
+  var version = "0.0.1";
+
+  function interval (series) {
+    var flag = series.interval;
+
+    if (flag === 'auto') {
+      var data = series.data;
+      var total = 0;
+
+      for (var i in data) {
+        total += Number(data[i].value || data[i]);
+      }
+
+      for (var _i in data) {
+        data.splice(2 * _i + 1, 0, {
+          name: '',
+          value: total * 0.04,
+          label: {
+            show: false
+          },
+          labelLine: {
+            show: false
+          },
+          itemStyle: {
+            color: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            borderColor: 'rgba(0,0,0,0)'
+          }
+        });
+      }
+    } else if (flag) {
+      if (window.isNaN(flag)) {
+        throw new TypeError("interval need to be a number or 'auto'");
+      }
+
+      var _data = series.data;
+      var _total = 0;
+
+      for (var _i2 in _data) {
+        _total += Number(_data[_i2].value || _data[_i2]);
+      }
+
+      for (var _i3 in _data) {
+        _data.splice(2 * _i3 + 1, 0, {
+          name: '',
+          value: _total * flag / 100,
+          label: {
+            show: false
+          },
+          labelLine: {
+            show: false
+          },
+          itemStyle: {
+            color: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            borderColor: 'rgba(0,0,0,0)'
+          }
+        });
+      }
+    }
+  }
+
+  var handbox = {
+    interval: interval
+  };
+
+  function pieHandler(series) {
+    for (var eventer in handbox) {
+      if (handbox.hasOwnProperty(eventer) && (series === null || series === void 0 ? void 0 : series[eventer])) {
+        handbox[eventer](series);
+      }
+    }
+  }
+
+  var Tirgger =
+  /*#__PURE__*/
+  function () {
+    function Tirgger() {
+      _classCallCheck(this, Tirgger);
+
+      this.handler = {
+        pie: pieHandler
+      };
+    }
+
+    _createClass(Tirgger, [{
+      key: "triggerEvent",
+      value: function triggerEvent(type, series) {
+        if (this.handler.hasOwnProperty(type)) {
+          this.handler[type](series);
+        }
+      }
+    }]);
+
+    return Tirgger;
+  }();
+
+  var Trigger = new Tirgger();
+
+  var Inspect =
+  /*#__PURE__*/
+  function () {
+    function Inspect() {
+      _classCallCheck(this, Inspect);
+
+      this.tool = tool;
+      this.trigger = Trigger;
+    }
+
+    _createClass(Inspect, [{
+      key: "run",
+      value: function run(option) {
+        option = this.tool.deepClone(option);
+
+        if (this.tool.hasSeries(option)) {
+          for (var i in option.series) {
+            if (option.series.hasOwnProperty(i)) {
+              this.trigger.triggerEvent(option.series[i].type, option.series[i]);
+            }
+          }
+        }
+
+        return option;
+      }
+    }]);
+
+    return Inspect;
+  }();
+
+  var Inspecter = new Inspect();
+
   var Morecharts =
   /*#__PURE__*/
   function () {
     function Morecharts() {
       _classCallCheck(this, Morecharts);
 
-      this.verson = '0.0.1';
+      this.verson = version;
       this.token = null;
       this.server = null;
     }
@@ -126,106 +257,16 @@
     var tempSetOption = ECharts.__proto__.setOption;
     ECharts.__proto__.setOption = new Proxy(tempSetOption, {
       apply: function apply(target, thisArg, argArray) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = argArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var option = _step.value;
-            // 遍历参数对象，检查是否含有重写的参数 - 检查器
-            inspect(option);
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-              _iterator["return"]();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
+        for (var i in argArray) {
+          // 遍历参数对象，检查是否含有重写的参数 - 检查器
+          if (argArray.hasOwnProperty(i)) {
+            argArray[i] = Inspecter.run(argArray[i]);
           }
         }
 
         return Reflect.apply.apply(Reflect, arguments);
       }
     });
-  }
-
-
-  function inspect(option) {
-    if (tool.hasSeries(option)) {
-      if (option.series[0].type === 'pie') {
-        triggerPie(option);
-      }
-    }
-  } // 触发器 - 触发对应的操作
-
-
-  function triggerPie(option) {
-    var flag = option.series[0].interval;
-
-    if (flag === 'auto') {
-      option.series[0].data = tool.deepClone(option.series[0].data);
-      var data = option.series[0].data;
-      var total = 0;
-
-      for (var i in data) {
-        total += Number(data[i].value || data[i]);
-      }
-
-      for (var _i in data) {
-        data.splice(2 * _i + 1, 0, {
-          name: '',
-          value: total * 0.04,
-          label: {
-            show: false
-          },
-          labelLine: {
-            show: false
-          },
-          itemStyle: {
-            color: 'rgba(0,0,0,0)',
-            borderWidth: 0,
-            borderColor: 'rgba(0,0,0,0)'
-          }
-        });
-      }
-    } else if (flag) {
-      if (window.isNaN(flag)) {
-        throw new TypeError("interval need to be a number or 'auto'");
-      }
-
-      option.series[0].data = tool.deepClone(option.series[0].data);
-      var _data = option.series[0].data;
-      var _total = 0;
-
-      for (var _i2 in _data) {
-        _total += Number(_data[_i2].value || _data[_i2]);
-      }
-
-      for (var _i3 in _data) {
-        _data.splice(2 * _i3 + 1, 0, {
-          name: '',
-          value: _total * flag / 100,
-          label: {
-            show: false
-          },
-          labelLine: {
-            show: false
-          },
-          itemStyle: {
-            color: 'rgba(0,0,0,0)',
-            borderWidth: 0,
-            borderColor: 'rgba(0,0,0,0)'
-          }
-        });
-      }
-    }
   }
 
   var main = new Morecharts();
