@@ -1,7 +1,7 @@
 {
   "name": "morecharts",
-  "version": "0.0.2",
-  "description": "提供丰富的echarts图库，write once run manytimes",
+  "version": "0.1.0",
+  "description": "提供丰富的echarts图库，More Charts Less Code",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

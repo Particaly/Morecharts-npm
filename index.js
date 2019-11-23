@@ -70,7 +70,7 @@
     }
   };
 
-  var version = "0.0.1";
+  var version = "0.0.3";
 
   function interval (series) {
     var flag = series.interval;
@@ -208,7 +208,7 @@
       _classCallCheck(this, Morecharts);
 
       this.verson = version;
-      this.token = null;
+      this.accesstoken = null;
       this.server = null;
     }
     /*

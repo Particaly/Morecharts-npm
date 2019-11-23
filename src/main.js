@@ -1,6 +1,6 @@
 /**
 * Created by J.S.Patrick on 2019/11/20.
-* 提供丰富的echarts图库，write once run manytimes
+* 提供丰富的echarts图库，More Charts Less Code.
 */
 import tool from './util/utils';
 import { version } from "../package.json";
@@ -9,7 +9,7 @@ import Inspecter from './functional/inspecter'
 class Morecharts {
 	constructor(){
 		this.verson = version;
-		this.token = null;
+		this.accesstoken = null;
 		this.server = null;
 	}
 	/*
