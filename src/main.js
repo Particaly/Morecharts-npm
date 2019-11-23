@@ -2,10 +2,13 @@
 * Created by J.S.Patrick on 2019/11/20.
 * 提供丰富的echarts图库，write once run manytimes
 */
-import tool from './utils'
-class Morechart {
+import tool from './util/utils';
+import { version } from "../package.json";
+import Inspecter from './functional/inspecter'
+
+class Morecharts {
 	constructor(){
-		this.verson = '0.0.1';
+		this.verson = version;
 		this.token = null;
 		this.server = null;
 	}
@@ -43,110 +46,16 @@ function ProxyEcharts(ECharts){
 	let tempSetOption = ECharts.__proto__.setOption;
 	ECharts.__proto__.setOption = new Proxy(tempSetOption, {
 		apply(target, thisArg, argArray) {
-			for (let option of argArray){
+			for (let i in argArray){
 				// 遍历参数对象，检查是否含有重写的参数 - 检查器
-				inspect(option)
+				if(argArray.hasOwnProperty(i)){
+					argArray[i] = Inspecter.run(argArray[i])
+				}
 			}
 			return Reflect.apply(...arguments);
 		}
 	})
 }
 
-class Inspect {
-	constructor(){
-	
-	}
-	run(){
-	
-	}
-}
-
-
-
-// 检查器
-function inspect(option) {
-	if(tool.hasSeries(option)){
-		if(option.series[0].type==='pie'){
-			triggerPie(option)
-		}
-	}
-	
-}
-
-// 触发器 - 触发对应的操作
-function triggerPie(option) {
-	let flag = option.series[0].interval;
-	if(flag==='auto'){
-		option.series[0].data = tool.deepClone(option.series[0].data);
-		let data = option.series[0].data;
-		let total = 0;
-		for(let i in data){
-			total+=Number(data[i].value||data[i]);
-		}
-		for(let i in data){
-			data.splice(2*i+1,0,{
-				name:'',
-				value: total*0.04,
-				label:{
-					show:false,
-				},
-				labelLine:{
-					show:false,
-				},
-				itemStyle: {
-					color: 'rgba(0,0,0,0)',
-					borderWidth: 0,
-					borderColor: 'rgba(0,0,0,0)'
-				}
-			})
-		}
-	}else if(flag){
-		if(window.isNaN(flag)){
-			throw new TypeError("interval need to be a number or 'auto'")
-		}
-		option.series[0].data = tool.deepClone(option.series[0].data);
-		let data = option.series[0].data;
-		let total = 0;
-		for(let i in data){
-			total+=Number(data[i].value||data[i]);
-		}
-		for(let i in data){
-			data.splice(2*i+1,0,{
-				name:'',
-				value: total*flag/100,
-				label:{
-					show:false,
-				},
-				labelLine:{
-					show:false,
-				},
-				itemStyle: {
-					color: 'rgba(0,0,0,0)',
-					borderWidth: 0,
-					borderColor: 'rgba(0,0,0,0)'
-				}
-			})
-		}
-	}
-}
-
-(function(factory) {
-	if (typeof module === 'object' && typeof module.exports === 'object') {
-		// commonjs模块规范，nodejs环境
-		module.exports = factory();
-	} else if (typeof define === 'function' && define.amd) {
-		// AMD模块规范，如require.js
-		define(factory)
-	} else if (typeof define === 'function' && define.cmd) {
-		// CMD模块规范，如sea.js
-		define(function(require, exports, module) {
-			module.exports = factory()
-		})
-	} else {
-		// 没有模块环境，直接挂载在全局对象上
-		window.Morechart = factory();
-	}
-}(function() {
-	return (new Morechart())
-}));
+export default new Morecharts()
 
