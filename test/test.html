@@ -28,6 +28,7 @@
         <div class="chart" id="chart4"></div>
     </div>
     <script src="https://cdn.bootcss.com/echarts/4.4.0-rc.1/echarts.js"></script>
+    <script src="chartdata.js"></script>
     <script src="../index.js"></script>
     <script>
         window.onload = function(){
@@ -96,7 +97,7 @@
 	        chart1.setOption(option);
 	        chart2.setOption(option);
 	        chart3.setOption(option);
-	        chart4.setOption(option);
+	        chart4.setOption('一个图表',{series:[{data:[0,0,0,0,0]}]});
         };
     </script>
 </body>

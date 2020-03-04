@@ -70,7 +70,7 @@
     }
   };
 
-  var version = "0.0.1";
+  var version = "0.0.2";
 
   function interval (series) {
     var flag = series.interval;
@@ -201,6 +201,36 @@
 
   var Inspecter = new Inspect();
 
+  var database, _echart;
+
+  if (window.namespace.morechartsData) {
+    var dataArray = window.namespace.morechartsData;
+    database = {};
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = dataArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var item = _step.value;
+        database[item.chartInfo.name] = item.chartInfo.code;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }
+
   var Morecharts =
   /*#__PURE__*/
   function () {
@@ -208,8 +238,6 @@
       _classCallCheck(this, Morecharts);
 
       this.verson = version;
-      this.token = null;
-      this.server = null;
     }
     /*
     * 初始化echarts,返回值是被代理的echarts
@@ -245,6 +273,7 @@
             return ECharts; // 返回被初始化了的 echarts 对象
           }
         });
+        _echart = echarts;
         return echarts;
       }
     }]);
@@ -257,18 +286,61 @@
     var tempSetOption = ECharts.__proto__.setOption;
     ECharts.__proto__.setOption = new Proxy(tempSetOption, {
       apply: function apply(target, thisArg, argArray) {
-        for (var i in argArray) {
-          // 遍历参数对象，检查是否含有重写的参数 - 检查器
-          if (argArray.hasOwnProperty(i)) {
-            argArray[i] = Inspecter.run(argArray[i]);
-          }
+        if (tool.isType('String', argArray[0])) {
+          argArray[0] = runScript(argArray[0]);
         }
 
-        return Reflect.apply.apply(Reflect, arguments);
+        if (tool.isType('Object', argArray[1])) {
+          mixinsOptions(argArray[0], argArray[1]);
+          console.log(argArray[0]);
+        }
+
+        argArray[0] = Inspecter.run(argArray[0]);
+        return Reflect.apply(target, thisArg, argArray);
       }
     });
   }
 
+  function runScript(id) {
+    var code = database[id] + ";\nreturn option;";
+
+    try {
+      return new Function('echarts', code)(_echart);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  function mixinsOptions(source, target) {
+    // 目标是对象
+    if (tool.isType('Object', target) || tool.isType('Array', target)) {
+      for (var i in target) {
+        // 获取目标的值
+        if (target.hasOwnProperty(i) && target[i] !== undefined) {
+          // 若仍然是对象，递归
+          // 托不是对象数组，赋值
+          // 如果两者类型不同，直接赋值
+          console.log(source[i], target[i]);
+          console.log(getType(target[i]), getType(source[i]));
+
+          if (getType(target[i]) !== getType(source[i])) {
+            source[i] = target[i];
+          } else if (tool.isType('Object', target[i]) || tool.isType('Array', target[i])) {
+            mixinsOptions(source[i], target[i]);
+          } else {
+            console.log(source);
+            source[i] = target[i];
+          }
+        }
+      }
+    }
+  }
+
+  function getType(target) {
+    return Object.prototype.toString.call(target).replace('[object ', '').replace(']', '');
+  }
+
+  console.log(getType({}));
   var main = new Morecharts();
 
   return main;

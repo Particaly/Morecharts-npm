@@ -3,14 +3,21 @@
 * 提供丰富的echarts图库，write once run manytimes
 */
 import tool from './util/utils';
-import { version } from "../package.json";
+import {version} from "../package.json";
 import Inspecter from './functional/inspecter'
+
+let database,_echart;
+if(window.namespace.morechartsData){
+	let dataArray = window.namespace.morechartsData;
+	database = {};
+	for(let item of dataArray){
+		database[item.chartInfo.name] = item.chartInfo.code;
+	}
+}
 
 class Morecharts {
 	constructor(){
 		this.verson = version;
-		this.token = null;
-		this.server = null;
 	}
 	/*
 	* 初始化echarts,返回值是被代理的echarts
@@ -37,6 +44,7 @@ class Morecharts {
 				return ECharts              // 返回被初始化了的 echarts 对象
 			}
 		});
+		_echart = echarts;
 		return echarts
 	}
 }
@@ -46,15 +54,50 @@ function ProxyEcharts(ECharts){
 	let tempSetOption = ECharts.__proto__.setOption;
 	ECharts.__proto__.setOption = new Proxy(tempSetOption, {
 		apply(target, thisArg, argArray) {
-			for (let i in argArray){
-				// 遍历参数对象，检查是否含有重写的参数 - 检查器
-				if(argArray.hasOwnProperty(i)){
-					argArray[i] = Inspecter.run(argArray[i])
-				}
+			if(tool.isType('String',argArray[0])){
+				argArray[0] = runScript(argArray[0]);
 			}
-			return Reflect.apply(...arguments);
+			if(tool.isType('Object',argArray[1])){
+				mixinsOptions(argArray[0],argArray[1]);
+			}
+			argArray[0] = Inspecter.run(argArray[0]);
+			return Reflect.apply(target, thisArg, argArray);
 		}
 	})
+}
+
+function runScript(id) {
+	let code = database[id] + `;\nreturn option;`;
+	try{
+		return new Function('echarts',code)(_echart);
+	}catch (e) {
+		console.log(e);
+	}
+}
+
+function mixinsOptions(source, target) {
+	// 目标是对象
+	if(tool.isType('Object',target)||tool.isType('Array',target)){
+		for(let i in target){
+			// 获取目标的值
+			if(target.hasOwnProperty(i)&&target[i]!==undefined){
+				// 若仍然是对象，递归
+				// 托不是对象数组，赋值
+				// 如果两者类型不同，直接赋值
+				if(getType(target[i])!==getType(source[i])){
+					source[i] = target[i];
+				}else if(tool.isType('Object',target[i])||tool.isType('Array',target[i])){
+					mixinsOptions(source[i],target[i])
+				}else{
+					source[i] = target[i];
+				}
+			}
+		}
+	}
+}
+
+function getType(target) {
+	return Object.prototype.toString.call(target).replace('[object ','').replace(']','')
 }
 
 export default new Morecharts()
