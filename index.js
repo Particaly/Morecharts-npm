@@ -70,7 +70,7 @@
     }
   };
 
-  var version = "0.0.2";
+  var version = "0.1.0";
 
   function interval (series) {
     var flag = series.interval;
@@ -292,7 +292,6 @@
 
         if (tool.isType('Object', argArray[1])) {
           mixinsOptions(argArray[0], argArray[1]);
-          console.log(argArray[0]);
         }
 
         argArray[0] = Inspecter.run(argArray[0]);
@@ -320,15 +319,11 @@
           // 若仍然是对象，递归
           // 托不是对象数组，赋值
           // 如果两者类型不同，直接赋值
-          console.log(source[i], target[i]);
-          console.log(getType(target[i]), getType(source[i]));
-
           if (getType(target[i]) !== getType(source[i])) {
             source[i] = target[i];
           } else if (tool.isType('Object', target[i]) || tool.isType('Array', target[i])) {
             mixinsOptions(source[i], target[i]);
           } else {
-            console.log(source);
             source[i] = target[i];
           }
         }
@@ -340,7 +335,6 @@
     return Object.prototype.toString.call(target).replace('[object ', '').replace(']', '');
   }
 
-  console.log(getType({}));
   var main = new Morecharts();
 
   return main;
