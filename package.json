@@ -1,6 +1,6 @@
 {
   "name": "morecharts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "提供丰富的echarts图库，write once run manytimes",
   "main": "index.js",
   "scripts": {
